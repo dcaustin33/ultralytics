@@ -254,9 +254,16 @@ class v8DetectionLoss:
                 pred_distri, pred_bboxes, anchor_points, target_bboxes, target_scores, target_scores_sum, fg_mask
             )
 
-        loss[0] *= self.hyp.box  # box gain
-        loss[1] *= self.hyp.cls  # cls gain
-        loss[2] *= self.hyp.dfl  # dfl gain
+        if "box" in self.hyp:
+            loss[0] *= self.hyp.box  # box gain
+            loss[1] *= self.hyp.cls  # cls gain
+            loss[2] *= self.hyp.dfl  # dfl gain
+        else:
+            loss[0] *= 7.5
+            loss[1] *= 0.5
+            loss[2] *= 1.5
+            
+            
 
         return loss.sum() * batch_size, loss.detach()  # loss(box, cls, dfl)
 

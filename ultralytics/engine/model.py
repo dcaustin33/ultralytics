@@ -808,6 +808,17 @@ class Model(nn.Module):
             self.overrides = self.model.args
             self.metrics = getattr(self.trainer.validator, "metrics", None)  # TODO: no metrics returned by DDP
         return self.metrics
+    
+    def simple_train_setup(self, **kwargs):
+        overrides = yaml_load(checks.check_yaml(kwargs["cfg"])) if kwargs.get("cfg") else self.overrides
+        custom = {
+            "data": overrides.get("data") or DEFAULT_CFG_DICT["data"] or TASK2DATA[self.task],
+            "model": self.overrides["model"],
+            "task": self.task,
+        }  # method defaults
+        args = {**overrides, **custom, **kwargs, "mode": "train"}  # highest priority args on the right
+        self.trainer = (self._smart_load("trainer"))(overrides=args, _callbacks=self.callbacks)
+        return args
 
     def tune(
         self,
