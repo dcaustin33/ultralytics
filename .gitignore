@@ -3,6 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+*drone_v7_synthetic*
+
 # C extensions
 *.so
 
